@@ -7,9 +7,10 @@ class OpenCVStreamTrack(MediaStreamTrack):
 
     kind = 'video'
 
-    def __init__(self, track):
+    def __init__(self, track, mode):
         super().__init__()
         self.track = track
+        self.mode = mode
 
     async def recv(self):
 
@@ -17,9 +18,10 @@ class OpenCVStreamTrack(MediaStreamTrack):
         while not self.track._queue.empty():
             frame = await self.track.recv()
 
+        if self.mode == 'regular':
+            return frame
+
         img = frame.to_ndarray(format="bgr24")
-
-
 
         # prepare color
         img_color = cv2.pyrDown(cv2.pyrDown(img))
